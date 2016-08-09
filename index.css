@@ -13,7 +13,11 @@ h1{
 }
 
 #red{
-    background: red;
+    background: rgb(255, 0, 0);
+}
+
+.halfOpacity{
+    opacity: 0.5;
 }
 
 #blue{
