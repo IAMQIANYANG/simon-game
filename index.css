@@ -1,0 +1,35 @@
+h1{
+    text-align: center;
+}
+
+.footer{
+    text-align: center;
+}
+
+.color{
+    width:100px;
+    height: 100px;
+    display:inline-block;;
+}
+
+#red{
+    background: red;
+}
+
+#blue{
+    background: blue;
+}
+
+#green{
+    background: green;
+}
+
+#yellow{
+    background: yellow;
+}
+
+.control{
+    border: 1px solid black;
+    width:100px;
+    margin:10px;
+}
