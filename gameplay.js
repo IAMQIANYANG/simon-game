@@ -3,35 +3,27 @@
  */
 
 var Gameplay = function(){
-  let colorSequence = [1,2];
   const allColors = ['red', 'green', 'blue', 'yellow'];
   
   const self = {
-    playerColorSequence: [],
 
     chooseAndPushRandomColor: function(){
-      let currentColor = allColors[Math.floor(Math.random()*allColors.length)];
-      colorSequence.push(currentColor);
-      return currentColor;
+      return allColors[Math.floor(Math.random()*allColors.length)];
     },
     
-    ifPlayComputerSequenceEqual: function(){
-      if(colorSequence.length !== self.playerColorSequence.length) {
+    ifPlayComputerSequenceEqual: function(array1, array2){
+      if(array1.length !== array2.length) {
         return false
       } else {
-        for (let i = 0; i <= colorSequence.length; i++){
-          if(colorSequence[i] !== self.playerColorSequence[i]) {
+        for (let i = 0; i <= array1.length; i++){
+          if(array1[i] !== array2[i]) {
             return false;
           }
         }
         return true;
       }
-    },
-    
-    getCurrentColorSequence: function(){
-      return colorSequence;
-    },
-    numberOfColors:  colorSequence.length
+    }
+
     
   };
 
