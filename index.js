@@ -38,96 +38,102 @@ var isWinning = function(){
 };
 
 //gameplay logic for normal mode;
+
+var playTimeout;
+
+var playSetTimeOut = function(){
+  playTimeout = window.setTimeout(play, 1000);
+};
+
 var play = function () {
-  if (isWinning()){
-    infoBox.innerHTML = '<p>Congratulations! You won!</p>';
-    return;
-  }
+  // if (isWinning()){
+  //   infoBox.innerHTML = '<p>Congratulations! You won!</p>';
+  //   return;
+  // }
+  playerCurrentColors = [];
   if (isCorrect) {
-    currentColors.push(game.chooseAndPushRandomColor());
+    currentColors.push(game.chooseARandomColor());
     let currentArrayLength = currentColors.length;
     allColorSequence.push(currentColors.slice(0, currentArrayLength));
     infoBox.innerHTML = '<p>' + currentColors.length + '</p>';
   }
 
   arrayChangeOpacityAndPlayAudio(currentColors, 1000);
-  playerCurrentColors = [];
+  console.log("player" + playerCurrentColors)
   playerPlay();
-  checkResultTimeOut(getSpeed());
+  // checkResultTimeOut(getSpeed());
 
 };
+
+var timeoutResult1;
+// var checkResultTimeOut = function(speed){
+//   timeoutResult1 = window.setTimeout(checkResult, currentColors.length * speed);
+//
+//   function checkResult() {
+//     if (game.test(currentColors, playerCurrentColors)) {
+//       isCorrect = true;
+//       play();
+//     } else {
+//       infoBox.innerHTML = '<p>Wrong :(</p>';
+//       isCorrect = false;
+//       play();
+//     }
+//
+//   }
+//
+// };
 
 //gameplay logic for strict mode
-let n = 0;
-var playStrict = function(){
-  if (isWinning()){
-    infoBox.innerHTML = '<p>Congratulations! You won!</p>';
-    return;
-  }
-  if (isCorrect && !strictMode) {
-    isWinning();
-    currentColors.push(game.chooseAndPushRandomColor());
-    let currentArrayLength = currentColors.length;
-    allColorSequence.push(currentColors.slice(0, currentArrayLength));
-    infoBox.innerHTML = '<p>' + currentColors.length + '</p>';
-  } else if(!isCorrect){
-    strictMode = true;
-    currentColors = allColorSequence[0];
-  } else if(isCorrect && strictMode){
-    infoBox.innerHTML = '<p>' + (currentColors.length + 1) + '</p>';
-    if(n < allColorSequence.length - 1){
-      n++;
-      currentColors = allColorSequence[n];
-    } else if (n >= allColorSequence.length - 1){
-      strictMode = false;
-      n=0;
-      currentColors.push(game.chooseAndPushRandomColor());
-    }
-  }
+// let n = 0;
+// var playStrict = function(){
+//   if (isWinning()){
+//     infoBox.innerHTML = '<p>Congratulations! You won!</p>';
+//     return;
+//   }
+//   if (isCorrect && !strictMode) {
+//     isWinning();
+//     currentColors.push(game.chooseARandomColor());
+//     let currentArrayLength = currentColors.length;
+//     allColorSequence.push(currentColors.slice(0, currentArrayLength));
+//     infoBox.innerHTML = '<p>' + currentColors.length + '</p>';
+//   } else if(!isCorrect){
+//     strictMode = true;
+//     currentColors = allColorSequence[0];
+//   } else if(isCorrect && strictMode){
+//     infoBox.innerHTML = '<p>' + (currentColors.length + 1) + '</p>';
+//     if(n < allColorSequence.length - 1){
+//       n++;
+//       currentColors = allColorSequence[n];
+//     } else if (n >= allColorSequence.length - 1){
+//       strictMode = false;
+//       n=0;
+//       currentColors.push(game.chooseARandomColor());
+//     }
+//   }
+//
+//   arrayChangeOpacityAndPlayAudio(currentColors, 1000);
+//   playerCurrentColors = [];
+//   playerPlay();
+//   checkResultTimeOut2(getSpeed());
+//
+//   function checkResultTimeOut2(speed){
+//     var timeout2 = window.setTimeout(checkResult, currentColors.length * speed);
+//
+//     function checkResult() {
+//       if (game.ifPlayComputerSequenceEqual(currentColors, playerCurrentColors)) {
+//         isCorrect = true;
+//         playStrict();
+//       } else {
+//         infoBox.innerHTML = '<p>Wrong :(</p>';
+//         isCorrect = false;
+//         playStrict();
+//       }
+//
+//     }
+//
+//   }
+// };
 
-  arrayChangeOpacityAndPlayAudio(currentColors, 1000);
-  playerCurrentColors = [];
-  playerPlay();
-  checkResultTimeOut2(getSpeed());
-
-  function checkResultTimeOut2(speed){
-    var timeout2 = window.setTimeout(checkResult, currentColors.length * speed);
-
-    function checkResult() {
-      if (game.ifPlayComputerSequenceEqual(currentColors, playerCurrentColors)) {
-        isCorrect = true;
-        playStrict();
-      } else {
-        infoBox.innerHTML = '<p>Wrong :(</p>';
-        isCorrect = false;
-        playStrict();
-      }
-
-    }
-
-  }
-};
-
-// check if player has clicked the right button;
-var checkResultTimeOut = function(speed){
-  var timeout = window.setTimeout(checkResult, currentColors.length * speed);
-
-  function checkResult() {
-    if (game.ifPlayComputerSequenceEqual(currentColors, playerCurrentColors)) {
-      isCorrect = true;
-      if (strictMode){
-        playStrict();
-      }
-      play();
-    } else {
-      infoBox.innerHTML = '<p>Wrong :(</p>';
-      isCorrect = false;
-      play();
-    }
-
-  }
-
-};
 
 //change the speed of play;
 var getSpeed = function(){
@@ -147,19 +153,52 @@ var restart = function(){
 };
 
 // function to get the id of color button clicked by the player;
-let playerCurrentColors;
+let playerCurrentColors = [];
 
-var pushClickedButtonId = function(){
-  playerCurrentColors.push(this.id);
-  changeOpacityAndPlayAudio(this.id);
+var checkPlayerInput = function() {
+  if (!game.ifPlayComputerSequenceEqual(currentColors, playerCurrentColors)) {
+    console.log(1)
+    console.log(currentColors)
+    console.log(playerCurrentColors)
+    isCorrect = false;
+    infoBox.innerHTML = '<p>Wrong :(</p>';
+    playSetTimeOut();
+  } else {
+    if (playerCurrentColors.length < currentColors.length) {
+    } else {
+      isCorrect = true;
+      console.log(3);
+      playSetTimeOut();
+    }
+
+  }
+
+};
+
+var pushClickedButtonId = function(element){
+  playerCurrentColors.push(element.id);
+  changeOpacityAndPlayAudio(element.id);
 };
 
 // add event listeners to color buttons;
 var playerPlay = function(){
-  redButton.onclick = pushClickedButtonId;
-  blueButton.onclick = pushClickedButtonId;
-  greenButton.onclick = pushClickedButtonId;
-  yellowButton.onclick = pushClickedButtonId;
+  redButton.addEventListener('click', function(){
+    pushClickedButtonId(redButton);
+    checkPlayerInput();
+  });
+  blueButton.addEventListener('click', function(){
+    pushClickedButtonId(blueButton);
+    checkPlayerInput();
+  });
+  greenButton.addEventListener('click', function(){
+    pushClickedButtonId(greenButton);
+    checkPlayerInput();
+  });
+  yellowButton.addEventListener('click', function(){
+    pushClickedButtonId(yellowButton);
+    checkPlayerInput();
+  });
+
 };
 
 

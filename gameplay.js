@@ -2,29 +2,61 @@
  * Created by pandachain on 2016-08-08.
  */
 
-var Gameplay = function(){
+var Colorgame = function(){
   const allColors = ['red', 'green', 'blue', 'yellow'];
+
+  let answer = [];
   
   const self = {
 
-    chooseAndPushRandomColor: function(){
-      return allColors[Math.floor(Math.random()*allColors.length)];
+    playerAnswer: [],
+
+    round: 1,
+
+    startGame: self.generateAnswer(),
+
+    resetGame: function(){
+      answer = [];
+      self.playerAnswer = [];
     },
-    
-    ifPlayComputerSequenceEqual: function(array1, array2){
-      if(array1.length !== array2.length) {
-        return false
-      } else {
-        for (let i = 0; i <= array1.length; i++){
-          if(array1[i] !== array2[i]) {
+    chooseARandomColor: function () {
+      return allColors[Math.floor(Math.random() * allColors.length)];
+    },
+
+    generateAnswer: function() {
+      for (let i = 0; i < 20; i++) {
+        answer.push(self.chooseARandomColor());
+      }
+    },
+
+    getAnswer: function(n){
+      return answer.slice(0,n);
+    },
+
+    checkPlayerInput: function () {
+      let answer = self.getAnswer(self.round);
+      let playerAnswer = self.playerAnswer;
+      if (playerAnswer.length < answer.length) {
+
+        for (let i = 0; i < playerAnswer.length; i++) {
+          if (answer[i] !== playerAnswer[i]) {
+            self.playerAnswer = [];
             return false;
           }
         }
-        return true;
-      }
-    }
+        return 'continue';
 
-    
+      } else if (playerAnswer.length === answer.length) {
+        if (answer[answer.length - 1] !== playerAnswer[playerAnswer.length - 1]) {
+          self.playerAnswer = [];
+          return false
+        } else {
+          self.round += 1;
+          return true;
+        }
+      }
+
+    }
   };
 
   return self;
