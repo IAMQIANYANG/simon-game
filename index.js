@@ -31,6 +31,7 @@ game.startGame();
 
 // set initial values to control the flow of the game
 let strictMode = false;
+let normalMode = false;
 let playerCanPlay = false;
 
 
@@ -178,14 +179,19 @@ let playErrorAudio = function(){
 
 // add event listeners to buttons;
 startButton.addEventListener('click', function(){
-  startButton.style.cssText = 'color: #F7CA18';
-  computerPlay();
+  if (!strictMode){
+    normalMode = true;
+    startButton.style.cssText = 'color: #F7CA18';
+    computerPlay();
+  }
 });
 
 strictButton.addEventListener('click', function(){
-  strictButton.style.cssText = 'color: #F7CA18';
-  strictMode = true;
-  computerPlay();
+  if(!normalMode){
+    strictButton.style.cssText = 'color: #F7CA18';
+    strictMode = true;
+    computerPlay();
+  }
 });
 
 replayButton.addEventListener('click', function(){
