@@ -2,15 +2,15 @@
  * Created by pandachain on 2016-08-08.
  */
 
-//this file uses scripts from ColorGame.js
+//this file uses scripts from colorgame.js
 
 // all audios  
 const redAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp3');
 const blueAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3');
 const greenAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3');
 const yellowAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3');
-const errorAudio = new Audio('http://soundbible.com/grab.php?id=1540&type=mp3');
-const victoryAudio = new Audio ('http://soundbible.com/grab.php?id=1003&type=mp3');
+const errorAudio = new Audio('https://crossorigin.me/http://soundbible.com/grab.php?id=1540&type=mp3');
+const victoryAudio = new Audio ('https://crossorigin.me/http://soundbible.com/grab.php?id=1003&type=mp3');
 
 // buttons to control the game
 const startButton = document.querySelector('#normal');
