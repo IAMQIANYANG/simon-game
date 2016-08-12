@@ -9,12 +9,14 @@ const redAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp
 const blueAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.mp3');
 const greenAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3');
 const yellowAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3');
+const errorAudio = new Audio('http://soundbible.com/grab.php?id=1540&type=mp3');
+const victoryAudio = new Audio ('http://soundbible.com/grab.php?id=1003&type=mp3');
 
 // buttons to control the game
 const startButton = document.querySelector('#normal');
 const strictButton = document.querySelector('#strict');
 const infoBox = document.querySelector('#info');
-const ReplayButton = document.querySelector('#restart');
+const replayButton = document.querySelector('#restart');
 
 // all color buttons
 const redButton = document.querySelector('#red');
@@ -40,8 +42,10 @@ let computerPlayTimeout = function(){
 
 // computer play the colors
 let computerPlay = function () {
+  window.clearTimeout(sessionTimeout);
   if (game.isWinning()){
     infoBox.innerHTML = '<p>Congratulations! You won!</p>';
+    playVictoryAudio();
     return;
   }
   infoBox.innerHTML = '<p>' + game.round + '</p>';
@@ -50,15 +54,34 @@ let computerPlay = function () {
 
 };
 
+// function to control the length of each session (play must play within three seconds);
+let sessionTimeout;
+let sessionExpire = function(){
+  sessionTimeout = window.setTimeout(function(){
+    playErrorAudio();
+    infoBox.innerHTML = '<p>Session takes too long :(</p>';
+    game.playerAnswer = [];
+    if(strictMode){
+      game.resetGame();
+      game.startGame();
+      playerCanPlay = false;
+    }
+    computerPlayTimeout();
+  }, 3000)
+};
+
 // get and check player input
 let getPlayerInputAndCheck = function(e){
   if (playerCanPlay) {
     game.playerAnswer.push(e.target.id);
-    changeOpacityAndPlayAudio(e.target.id);
+    window.clearTimeout(sessionTimeout);
+    changeOpacityAndPlayAudio(e.target.id, 20);
     let isCorrect = game.checkPlayerInput();
     if (isCorrect === 'continue') {
+      sessionExpire();
       return;
     } else if (!isCorrect) {
+      playErrorAudio();
       infoBox.innerHTML = '<p>Wrong :( Try again</p>';
       if (!strictMode) {
         computerPlayTimeout();
@@ -97,9 +120,10 @@ let arrayChangeOpacityAndPlayAudio = function(list, speed) {
     }
 
     function colorButtonEffects(){
-      changeOpacityAndPlayAudio(list[i]);
+      changeOpacityAndPlayAudio(list[i], 100);
       if (i === list.length - 1){
         playerCanPlay = true;
+        sessionExpire();
       }
     }
 
@@ -110,7 +134,7 @@ let arrayChangeOpacityAndPlayAudio = function(list, speed) {
 
 // change button color and play audio for a single color;
 
-let changeOpacityAndPlayAudio = function(color){
+let changeOpacityAndPlayAudio = function(color, speed){
   let element;
 
   if(color === 'red'){
@@ -136,7 +160,7 @@ let changeOpacityAndPlayAudio = function(color){
     delayRemoveClass();
 
     function delayRemoveClass() {
-      window.setTimeout(removeClass, 150);
+      window.setTimeout(removeClass, speed);
     }
 
     function removeClass(){
@@ -144,6 +168,13 @@ let changeOpacityAndPlayAudio = function(color){
       }
   };
 
+let playVictoryAudio = function(){
+  victoryAudio.play();
+};
+
+let playErrorAudio = function(){
+  errorAudio.play();
+};
 
 // add event listeners to buttons;
 startButton.addEventListener('click', function(){
@@ -157,9 +188,12 @@ strictButton.addEventListener('click', function(){
   computerPlay();
 });
 
-ReplayButton.addEventListener('click', function(){
+replayButton.addEventListener('click', function(){
+  replayButton.style.cssText = 'color: #F7CA18';
+
   game.restartGame();
-  computerPlayTimeout()
+  playerCanPlay = false;
+  computerPlay()
 });
 
 // add event listeners to color buttons;

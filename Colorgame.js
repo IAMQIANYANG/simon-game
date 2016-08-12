@@ -26,7 +26,6 @@ var ColorGame = function(){
     restartGame: function(){
       self.playerAnswer = [];
       self.round = 1;
-
     },
     
     chooseARandomColor: function () {
@@ -79,7 +78,7 @@ var ColorGame = function(){
     },
 
     isWinning: function(){
-      if (self.round === 20 && self.checkPlayerInput()){
+      if (self.round > 20 && self.checkPlayerInput()){
         return true;
       }
     }
