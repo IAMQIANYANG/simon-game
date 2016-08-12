@@ -2,7 +2,7 @@
  * Created by pandachain on 2016-08-08.
  */
 
-//this file uses scripts from gameplay.js
+//this file uses scripts from ColorGame.js
 
 // all audios  
 const redAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound1.mp3');
@@ -10,267 +10,173 @@ const blueAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound2.m
 const greenAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound3.mp3');
 const yellowAudio = new Audio('https://s3.amazonaws.com/freecodecamp/simonSound4.mp3');
 
-// buttons on the page
+// buttons to control the game
 const startButton = document.querySelector('#normal');
 const strictButton = document.querySelector('#strict');
 const infoBox = document.querySelector('#info');
-const restartButton = document.querySelector('#restart');
+const ReplayButton = document.querySelector('#restart');
 
+// all color buttons
 const redButton = document.querySelector('#red');
 const blueButton = document.querySelector('#blue');
 const greenButton = document.querySelector('#green');
 const yellowButton = document.querySelector('#yellow');
 
 
-// create a gampeplay object;
-let game = Gameplay();
+// create a ColorGame object and start the game;
+let game = ColorGame();
+game.startGame();
 
-let isCorrect = true;
-let currentColors = [];
-let allColorSequence = [];
+// set initial values to control the flow of the game
 let strictMode = false;
+let playerCanPlay = false;
 
-//function to check if the player has won;
-var isWinning = function(){
-  if (currentColors.length >= 20){
-    return true
+
+// set timeout for computer to play
+
+let computerPlayTimeout = function(){
+  window.setTimeout(computerPlay, 1000);
+};
+
+// computer play the colors
+let computerPlay = function () {
+  if (game.isWinning()){
+    infoBox.innerHTML = '<p>Congratulations! You won!</p>';
+    return;
   }
-};
+  infoBox.innerHTML = '<p>' + game.round + '</p>';
 
-//gameplay logic for normal mode;
-
-var playTimeout;
-
-var playSetTimeOut = function(){
-  playTimeout = window.setTimeout(play, 1000);
-};
-
-var play = function () {
-  // if (isWinning()){
-  //   infoBox.innerHTML = '<p>Congratulations! You won!</p>';
-  //   return;
-  // }
-  playerCurrentColors = [];
-  if (isCorrect) {
-    currentColors.push(game.chooseARandomColor());
-    let currentArrayLength = currentColors.length;
-    allColorSequence.push(currentColors.slice(0, currentArrayLength));
-    infoBox.innerHTML = '<p>' + currentColors.length + '</p>';
-  }
-
-  arrayChangeOpacityAndPlayAudio(currentColors, 1000);
-  console.log("player" + playerCurrentColors)
-  playerPlay();
-  // checkResultTimeOut(getSpeed());
+  arrayChangeOpacityAndPlayAudio(game.getCurrentAnswer(), getSpeed());
 
 };
 
-var timeoutResult1;
-// var checkResultTimeOut = function(speed){
-//   timeoutResult1 = window.setTimeout(checkResult, currentColors.length * speed);
-//
-//   function checkResult() {
-//     if (game.test(currentColors, playerCurrentColors)) {
-//       isCorrect = true;
-//       play();
-//     } else {
-//       infoBox.innerHTML = '<p>Wrong :(</p>';
-//       isCorrect = false;
-//       play();
-//     }
-//
-//   }
-//
-// };
-
-//gameplay logic for strict mode
-// let n = 0;
-// var playStrict = function(){
-//   if (isWinning()){
-//     infoBox.innerHTML = '<p>Congratulations! You won!</p>';
-//     return;
-//   }
-//   if (isCorrect && !strictMode) {
-//     isWinning();
-//     currentColors.push(game.chooseARandomColor());
-//     let currentArrayLength = currentColors.length;
-//     allColorSequence.push(currentColors.slice(0, currentArrayLength));
-//     infoBox.innerHTML = '<p>' + currentColors.length + '</p>';
-//   } else if(!isCorrect){
-//     strictMode = true;
-//     currentColors = allColorSequence[0];
-//   } else if(isCorrect && strictMode){
-//     infoBox.innerHTML = '<p>' + (currentColors.length + 1) + '</p>';
-//     if(n < allColorSequence.length - 1){
-//       n++;
-//       currentColors = allColorSequence[n];
-//     } else if (n >= allColorSequence.length - 1){
-//       strictMode = false;
-//       n=0;
-//       currentColors.push(game.chooseARandomColor());
-//     }
-//   }
-//
-//   arrayChangeOpacityAndPlayAudio(currentColors, 1000);
-//   playerCurrentColors = [];
-//   playerPlay();
-//   checkResultTimeOut2(getSpeed());
-//
-//   function checkResultTimeOut2(speed){
-//     var timeout2 = window.setTimeout(checkResult, currentColors.length * speed);
-//
-//     function checkResult() {
-//       if (game.ifPlayComputerSequenceEqual(currentColors, playerCurrentColors)) {
-//         isCorrect = true;
-//         playStrict();
-//       } else {
-//         infoBox.innerHTML = '<p>Wrong :(</p>';
-//         isCorrect = false;
-//         playStrict();
-//       }
-//
-//     }
-//
-//   }
-// };
-
-
-//change the speed of play;
-var getSpeed = function(){
-  if(currentColors.length > 5 && currentColors.length <= 9){
-    return 2200;
-  } else if (currentColors.length > 9 && currentColors.length <= 13){
-    return 1800;
-  }
-  return 2500;
-
-};
-
-
-// restart game
-var restart = function(){
-  document.location.reload(true);
-};
-
-// function to get the id of color button clicked by the player;
-let playerCurrentColors = [];
-
-var checkPlayerInput = function() {
-  if (!game.ifPlayComputerSequenceEqual(currentColors, playerCurrentColors)) {
-    console.log(1)
-    console.log(currentColors)
-    console.log(playerCurrentColors)
-    isCorrect = false;
-    infoBox.innerHTML = '<p>Wrong :(</p>';
-    playSetTimeOut();
-  } else {
-    if (playerCurrentColors.length < currentColors.length) {
-    } else {
-      isCorrect = true;
-      console.log(3);
-      playSetTimeOut();
+// get and check player input
+let getPlayerInputAndCheck = function(e){
+  if (playerCanPlay) {
+    game.playerAnswer.push(e.target.id);
+    changeOpacityAndPlayAudio(e.target.id);
+    let isCorrect = game.checkPlayerInput();
+    if (isCorrect === 'continue') {
+      return;
+    } else if (!isCorrect) {
+      infoBox.innerHTML = '<p>Wrong :( Try again</p>';
+      if (!strictMode) {
+        computerPlayTimeout();
+      } else {
+        game.resetGame();
+        game.startGame();
+        computerPlayTimeout();
+      }
+    } else if (isCorrect) {
+      computerPlayTimeout()
     }
-
-  }
-
-};
-
-var pushClickedButtonId = function(element){
-  playerCurrentColors.push(element.id);
-  changeOpacityAndPlayAudio(element.id);
-};
-
-// add event listeners to color buttons;
-var playerPlay = function(){
-  redButton.addEventListener('click', function(){
-    pushClickedButtonId(redButton);
-    checkPlayerInput();
-  });
-  blueButton.addEventListener('click', function(){
-    pushClickedButtonId(blueButton);
-    checkPlayerInput();
-  });
-  greenButton.addEventListener('click', function(){
-    pushClickedButtonId(greenButton);
-    checkPlayerInput();
-  });
-  yellowButton.addEventListener('click', function(){
-    pushClickedButtonId(yellowButton);
-    checkPlayerInput();
-  });
-
-};
-
-
-// function to change button effects and play audio for a color;
-let element;
-
-var changeOpacityAndPlayAudio = function(color){
-  if(color === 'red'){
-    element = redButton;
-  } else if (color === 'green'){
-    element = greenButton;
-  } else if (color === 'blue'){
-    element = blueButton;
-  } else if (color === 'yellow'){
-    element = yellowButton;
-  }
-
-  element.classList.add('halfOpacity');
-  if (color === 'red'){
-    redAudio.play();
-  } else if (color === 'blue'){
-    blueAudio.play();
-  } else if (color === 'green'){
-    greenAudio.play();
-  } else if (color === 'yellow'){
-    yellowAudio.play();
-  }
-  delayRemoveClass();
-
-  function delayRemoveClass() {
-    var timeoutRemoveOpacity = window.setTimeout(removeClass, 250);
-  }
-  
-  function removeClass(){
-    element.classList.remove('halfOpacity')
+    playerCanPlay = false;
   }
 };
 
 
-// function to change the color button effects and play audio for an array of colors;
-let timeoutColorButtonEffects;
+//change the speed of computerPlay;
+let getSpeed = function(){
+  if(game.round > 5 && game.round <= 9){
+    return 900;
+  } else if (game.round > 9 && game.round <= 13){
+    return 700;
+  }
+  return 1200;
 
-var arrayChangeOpacityAndPlayAudio = function(list, speed) {
+};
 
-  for(let i =0; i < list.length; i++){
+// change button color and play audio for an array of colors;
+let arrayChangeOpacityAndPlayAudio = function(list, speed) {
+
+  for(let i = 0; i < list.length; i++){
 
     function changeColorTimeout(){
 
-      timeoutColorButtonEffects = window.setTimeout(colorButtonEffects, i * speed);
+      window.setTimeout(colorButtonEffects, i * speed);
     }
 
     function colorButtonEffects(){
       changeOpacityAndPlayAudio(list[i]);
+      if (i === list.length - 1){
+        playerCanPlay = true;
+      }
     }
 
     changeColorTimeout();
 
   }
-
 };
+
+// change button color and play audio for a single color;
+
+let changeOpacityAndPlayAudio = function(color){
+  let element;
+
+  if(color === 'red'){
+      element = redButton;
+    } else if (color === 'green'){
+      element = greenButton;
+    } else if (color === 'blue'){
+      element = blueButton;
+    } else if (color === 'yellow'){
+      element = yellowButton;
+    }
+
+    element.classList.add('halfOpacity');
+    if (color === 'red'){
+      redAudio.play();
+    } else if (color === 'blue'){
+      blueAudio.play();
+    } else if (color === 'green'){
+      greenAudio.play();
+    } else if (color === 'yellow'){
+      yellowAudio.play();
+    }
+    delayRemoveClass();
+
+    function delayRemoveClass() {
+      window.setTimeout(removeClass, 150);
+    }
+
+    function removeClass(){
+        element.classList.remove('halfOpacity');
+      }
+  };
+
 
 // add event listeners to buttons;
 startButton.addEventListener('click', function(){
   startButton.style.cssText = 'color: #F7CA18';
-  play();
+  computerPlay();
 });
 
 strictButton.addEventListener('click', function(){
   strictButton.style.cssText = 'color: #F7CA18';
-  playStrict();
+  strictMode = true;
+  computerPlay();
 });
 
-restartButton.addEventListener('click', function(){
-  restart();
+ReplayButton.addEventListener('click', function(){
+  game.restartGame();
+  computerPlayTimeout()
 });
+
+// add event listeners to color buttons;
+let playerPlay = function () {
+  redButton.addEventListener('click', function (e) {
+    getPlayerInputAndCheck(e);
+  });
+  blueButton.addEventListener('click', function (e) {
+    getPlayerInputAndCheck(e);
+  });
+  greenButton.addEventListener('click', function (e) {
+    getPlayerInputAndCheck(e);
+  });
+  yellowButton.addEventListener('click', function (e) {
+    getPlayerInputAndCheck(e);
+  });
+
+};
+
+playerPlay();

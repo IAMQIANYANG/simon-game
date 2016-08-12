@@ -2,7 +2,7 @@
  * Created by pandachain on 2016-08-08.
  */
 
-var Colorgame = function(){
+var ColorGame = function(){
   const allColors = ['red', 'green', 'blue', 'yellow'];
 
   let answer = [];
@@ -13,12 +13,22 @@ var Colorgame = function(){
 
     round: 1,
 
-    startGame: self.generateAnswer(),
-
+    startGame: function(){
+      self.generateAnswer()
+    },
+    
     resetGame: function(){
       answer = [];
       self.playerAnswer = [];
+      self.round = 1;
     },
+
+    restartGame: function(){
+      self.playerAnswer = [];
+      self.round = 1;
+
+    },
+    
     chooseARandomColor: function () {
       return allColors[Math.floor(Math.random() * allColors.length)];
     },
@@ -33,14 +43,18 @@ var Colorgame = function(){
       return answer.slice(0,n);
     },
 
+    getCurrentAnswer: function(){
+      return answer.slice(0, self.round)
+      },
+
     checkPlayerInput: function () {
-      let answer = self.getAnswer(self.round);
+      let answer = self.getCurrentAnswer();
       let playerAnswer = self.playerAnswer;
       if (playerAnswer.length < answer.length) {
 
         for (let i = 0; i < playerAnswer.length; i++) {
           if (answer[i] !== playerAnswer[i]) {
-            self.playerAnswer = [];
+            self.clearPlayerAnswer();
             return false;
           }
         }
@@ -48,14 +62,26 @@ var Colorgame = function(){
 
       } else if (playerAnswer.length === answer.length) {
         if (answer[answer.length - 1] !== playerAnswer[playerAnswer.length - 1]) {
-          self.playerAnswer = [];
+          self.clearPlayerAnswer();
           return false
         } else {
+          self.clearPlayerAnswer();
           self.round += 1;
           return true;
         }
       }
 
+    },
+
+    clearPlayerAnswer: function(){
+
+      self.playerAnswer = [];
+    },
+
+    isWinning: function(){
+      if (self.round === 20 && self.checkPlayerInput()){
+        return true;
+      }
     }
   };
 
