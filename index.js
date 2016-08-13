@@ -195,8 +195,6 @@ strictButton.addEventListener('click', function(){
 });
 
 replayButton.addEventListener('click', function(){
-  replayButton.style.cssText = 'color: #F7CA18';
-
   game.restartGame();
   playerCanPlay = false;
   computerPlay()
