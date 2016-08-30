@@ -112,14 +112,14 @@ let getSpeed = function(){
 
 // change button color and play audio for an array of colors;
 
-let playNextColorTimeOut;
+let playNextColorTimeOut = [];
 let arrayChangeOpacityAndPlayAudio = function(list, speed) {
 
   for(let i = 0; i < list.length; i++){
 
     function changeColorTimeout(){
 
-      playNextColorTimeOut = window.setTimeout(colorButtonEffects, i * speed);
+      playNextColorTimeOut.push(window.setTimeout(colorButtonEffects, i * speed));
     }
 
     function colorButtonEffects(){
@@ -197,11 +197,13 @@ strictButton.addEventListener('click', function(){
 });
 
 replayButton.addEventListener('click', function(){
-    window.clearTimeout(playNextColorTimeOut);
+  playNextColorTimeOut.forEach(function(timeout){
+    window.clearTimeout(timeout);
+  });
     window.clearTimeout(sessionTimeout);
     game.restartGame();
     playerCanPlay = false;
-    computerPlay();
+    computerPlayTimeout();
 
 });
 
